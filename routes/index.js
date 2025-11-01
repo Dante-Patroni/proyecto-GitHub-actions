@@ -24,7 +24,7 @@ router.get('/subirfoto', (req, res, next) => {
 })
 
 // metodo post para subir fotos desde el formulario
-router.get('/subirfoto', upload.array('foto', 2), 
+router.post('/subirfoto', upload.array('foto', 2), 
 (req, res, next) => {
   var pagina = '<!doctype html><html><head></head><body>' +
   '<p>Se subieron las fotos</p>' +
