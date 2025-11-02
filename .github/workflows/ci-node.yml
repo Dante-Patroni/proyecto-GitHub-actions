@@ -8,8 +8,9 @@ on:
 
 jobs:
   build:
+    # Este job se enfoca en la Integración Continua (Instalación y Pruebas)
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,5 +23,40 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # Aquí se ejecutan las pruebas de calidad (el test de Supertest)
       - name: Run tests
         run: npm test
+
+  deploy:
+    # Este job se enfoca en el Despliegue Continuo (CD)
+    
+    # Dependencia CLAVE: SÓLO se ejecuta si el job 'build' tuvo éxito.
+    needs: build 
+    runs-on: ubuntu-latest
+    
+    # Permisos necesarios para escribir en GitHub Pages.
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # El código estático (la carpeta 'public') se sube como un artefacto.
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public' 
+
+      # Despliega el artefacto a GitHub Pages.
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
